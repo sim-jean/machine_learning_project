@@ -4,118 +4,119 @@ set more off
 
 
 *	CHANGE DIRECTORY
-cd "C:\data"	
+cd "/Users/simonjean/Projects/machine_learning_project/data"
+	
 
 
 ****************************
 *	1) GENERATE MAIN DATASET
 ****************************
-use "Intermedias\input_r1.dta",clear
-joinby codest using "Intermedias\input_r2.dta", unm(m)
+use "Intermedias/input_r1.dta",clear
+joinby codest using "Intermedias/input_r2.dta", unm(m)
 recode _merge (1=0) (3=1), gen(follow_up)
 drop _merge
 
-joinby codest using "Auxiliares\listas_final.dta", unm(m)
+joinby codest using "Auxiliares/listas_final.dta", unm(m)
 tab _merge
 drop _merge
 
-joinby codmod using "Auxiliares\school_pairs_final.dta", unm(m)
+joinby codmod using "Auxiliares/school_pairs_final.dta", unm(m)
 tab _merge
 drop _merge
 
 keep if grado_r1>=2
 
-cap joinby codest using "Intermedias\ece_r2.dta", unm(m)  /*(WARNING: Due to the confidentiality of the ECE the do file will not read these lines)*/
+cap joinby codest using "Intermedias/ece_r2.dta", unm(m)  /*(WARNING: Due to the confidentiality of the ECE the do file will not read these lines)*/
 cap tab _merge
 cap drop _merge
 
 replace grado_r2=2 if grado_r1==2 & grado_r2==.
 
-save "Finales\tables_stlima.dta", replace
+save "Finales/tables_stlima.dta", replace
 
 
 ***************************************************
 *	2) GENERATE MEAN AND SD FOR SCORES FROM ROUND 1
 ***************************************************
 foreach y in raven pcotskill pcsrskill {
-	use "Finales\tables_stlima.dta", clear
+	use "Finales/tables_stlima.dta", clear
 	keep if participated_in_lottery==1 & won_lottery==0
 	keep if male_r2~=.& age_r2~=.& sibling_r2~=.& ysibling_r2~=.& fathlivh_r2~=.& fathwout_r2~=.& mothwout_r2~=.
 	keep if pchome_r1~=. & pchome_r2~=.
 	keep if `y'_r1~=. & `y'_r2~=.
 	collapse (mean) `y'_r1 (sd) sd_`y'_r1=`y'_r1, by (grado_r1)
 	rename (`y'_r1) (mean_`y'_r1)
-	save "Auxiliares\stscore_`y'_r1.dta", replace
+	save "Auxiliares/stscore_`y'_r1.dta", replace
 	}
 
 
-use "Finales\tables_stlima.dta", clear
+use "Finales/tables_stlima.dta", clear
 keep if participated_in_lottery==1 & won_lottery==0
 cap keep if math_r1~=. & m500_m_11~=.							/*(WARNING: Due to the confidentiality of the ECE the do file will not read these lines)*/
 collapse (mean) math_r1 (sd) sd_math_r1=math_r1, by (grado_r1)
 rename (math_r1) (mean_math_r1)
-save "Auxiliares\stscore_math2_r1.dta", replace
+save "Auxiliares/stscore_math2_r1.dta", replace
 
-use "Finales\tables_stlima.dta", clear
+use "Finales/tables_stlima.dta", clear
 keep if participated_in_lottery==1 & won_lottery==0
 cap keep if read_r1~=. & m500_c_11~=.							/*(WARNING: Due to the confidentiality of the ECE the do file will not read these lines)*/
 collapse (mean) read_r1 (sd) sd_read_r1=read_r1, by (grado_r1)
 rename (read_r1) (mean_read_r1)
-save "Auxiliares\stscore_read2_r1.dta", replace
+save "Auxiliares/stscore_read2_r1.dta", replace
 
 
-merge 1:1 grado_r1 using "Auxiliares\stscore_raven_r1.dta", nogen
-merge 1:1 grado_r1 using "Auxiliares\stscore_pcsrskill_r1.dta", nogen
-merge 1:1 grado_r1 using "Auxiliares\stscore_pcotskill_r1.dta", nogen
-merge 1:1 grado_r1 using "Auxiliares\stscore_math2_r1.dta", nogen update
-save "Auxiliares\standardscores_r1.dta", replace
+merge 1:1 grado_r1 using "Auxiliares/stscore_raven_r1.dta", nogen
+merge 1:1 grado_r1 using "Auxiliares/stscore_pcsrskill_r1.dta", nogen
+merge 1:1 grado_r1 using "Auxiliares/stscore_pcotskill_r1.dta", nogen
+merge 1:1 grado_r1 using "Auxiliares/stscore_math2_r1.dta", nogen update
+save "Auxiliares/standardscores_r1.dta", replace
 
 
 ***************************************************
 *	3) GENERATE MEAN AND SD FOR SCORES FROM ROUND 2
 ***************************************************
 foreach y in raven pcotskill pcsrskill {
-	use "Finales\tables_stlima.dta", clear
+	use "Finales/tables_stlima.dta", clear
 	keep if participated_in_lottery==1 & won_lottery==0
 	keep if male_r2~=.& age_r2~=.& sibling_r2~=.& ysibling_r2~=.& fathlivh_r2~=.& fathwout_r2~=.& mothwout_r2~=.
 	keep if pchome_r1~=. & pchome_r2~=.
 	keep if `y'_r1~=. & `y'_r2~=.
 	collapse (mean) `y'_r2 (sd) sd_`y'_r2=`y'_r2, by (grado_r2)
 	rename (`y'_r2) (mean_`y'_r2)
-	save "Auxiliares\stscore_`y'_r2.dta", replace
+	save "Auxiliares/stscore_`y'_r2.dta", replace
 	}
 
-cap use "Finales\tables_stlima.dta", clear									/*(WARNING: Due to the confidentiality of the ECE the do file will not read these lines)*/
+cap use "Finales/tables_stlima.dta", clear									/*(WARNING: Due to the confidentiality of the ECE the do file will not read these lines)*/
 cap keep if participated_in_lottery==1 & won_lottery==0
 cap keep if math_r1~=. & m500_m_11~=.
 cap collapse (mean) m500_m_11 (sd) sd_mece_r2=m500_m_11, by (grado_r2)
 cap rename (m500_m_11) (mean_mece_r2)
-cap save "Auxiliares\stscore_mece_r2.dta", replace
+cap save "Auxiliares/stscore_mece_r2.dta", replace
 
-cap use "Finales\tables_stlima.dta", clear									/*(WARNING: Due to the confidentiality of the ECE the do file will not read these lines)*/
+cap use "Finales/tables_stlima.dta", clear									/*(WARNING: Due to the confidentiality of the ECE the do file will not read these lines)*/
 cap keep if participated_in_lottery==1 & won_lottery==0
 cap keep if read_r1~=. & m500_c_11~=.
 cap collapse (mean) m500_c_11 (sd) sd_rece_r2=m500_c_11, by (grado_r2)
 cap rename (m500_c_11) (mean_rece_r2)
-cap save "Auxiliares\stscore_rece_r2.dta", replace
+cap save "Auxiliares/stscore_rece_r2.dta", replace
 
-use "Finales\tables_stlima.dta", clear
+use "Finales/tables_stlima.dta", clear
 keep if participated_in_lottery==1 & won_lottery==0
 keep if male_r2~=.& age_r2~=.& sibling_r2~=.& ysibling_r2~=.& fathlivh_r2~=.& fathwout_r2~=.& mothwout_r2~=.
 keep if pchome_r1~=. & pchome_r2~=.
 keep if xo_r2~=. 
 collapse (mean) xo_r2 (sd) sd_xo_r2=xo_r2, by (grado_r2)
 rename (xo_r2) (mean_xo_r2)
-save "Auxiliares\stscore_xo_r2.dta", replace
+save "Auxiliares/stscore_xo_r2.dta", replace
 
-merge 1:1 grado_r2 using "Auxiliares\stscore_raven_r2.dta", nogen 
-merge 1:1 grado_r2 using "Auxiliares\stscore_pcsrskill_r2.dta", nogen
-merge 1:1 grado_r2 using "Auxiliares\stscore_pcotskill_r2.dta", nogen
-cap merge 1:1 grado_r2 using "Auxiliares\stscore_mece_r2.dta", nogen		/*(WARNING: Due to the confidentiality of the ECE the do file will not read these lines)*/
-cap merge 1:1 grado_r2 using "Auxiliares\stscore_rece_r2.dta", nogen		/*(WARNING: Due to the confidentiality of the ECE the do file will not read these lines)*/
-save "Auxiliares\standardscores_r2.dta", replace
+merge 1:1 grado_r2 using "Auxiliares/stscore_raven_r2.dta", nogen 
+merge 1:1 grado_r2 using "Auxiliares/stscore_pcsrskill_r2.dta", nogen
+merge 1:1 grado_r2 using "Auxiliares/stscore_pcotskill_r2.dta", nogen
+cap merge 1:1 grado_r2 using "Auxiliares/stscore_mece_r2.dta", nogen		/*(WARNING: Due to the confidentiality of the ECE the do file will not read these lines)*/
+cap merge 1:1 grado_r2 using "Auxiliares/stscore_rece_r2.dta", nogen		/*(WARNING: Due to the confidentiality of the ECE the do file will not read these lines)*/
+save "Auxiliares/standardscores_r2.dta", replace
 
-cd "C:\data\Auxiliares"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Auxiliares"	
 !erase stscore_*.dta
 
 	
@@ -123,11 +124,11 @@ cd "C:\data\Auxiliares"
 **************
 *	4) TABLE 1
 **************
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 
 *Generate standardized scores
@@ -150,7 +151,7 @@ gen tcol= participated_in_lottery==1 & won_lottery==1
 
 *Table
 egen cfixeff=group(codmod grado_r1 seccion_r1)
-cd "C:\data\Resultados"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"	
 !erase ntable1_stlima.xls
 !erase ntable1_stlima.txt 
 
@@ -183,9 +184,9 @@ outreg2 tcol using ntable1_stlima.xls, alpha(0.01, 0.05, 0.1) symbol(***,**,*) d
 
 
 *Add balance for 2nd grade math and reading (WARNING: Due to the confidentiality of the ECE the do file will not estimate these results)
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
 	
 	*Keep relevant observations
@@ -199,7 +200,7 @@ drop _merge
 	
 	*Table
 	egen cfixeff=group(codmod grado_r1 seccion_r1)
-	cd "C:\data\Resultados"	
+	cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"	
 
 	cap foreach y in stmath {
 	cap quiet reg `y'_r1 if tcol==1 &  m500_m_11~=.
@@ -224,8 +225,8 @@ drop _merge
 **************
 *	5) TABLE 2
 **************
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
 
 *Keep relevant observations
 keep if follow_up==1
@@ -238,7 +239,7 @@ global covariates  "male_r2 age_r2 sibling_r2 ysibling_r2 fathlivh_r2 fathwout_r
 
 *Table
 egen cfixeff=group(codmod grado_r1 seccion_r1)
-cd "C:\data\Resultados"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"	
 !erase ntable2_stlima.xls
 !erase ntable2_stlima.txt 
 
@@ -255,11 +256,11 @@ outreg2 tcol using ntable2_stlima.xls, alpha(0.01, 0.05, 0.1) symbol(***,**,*) d
 ********************************************************************************
 *	6) TABLE 3
 ********************************************************************************
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 
 *Keep relevant observations
@@ -283,7 +284,7 @@ gen stxo_r2=(xo_r2-mean_xo_r2)/sd_xo_r2
 
 *Table
 egen cfixeff=group(codmod grado_r1 seccion_r1)
-cd "C:\data\Resultados"
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"
 !erase ntable3_stlima.xls
 !erase ntable3_stlima.txt 
 
@@ -307,11 +308,11 @@ outreg2 tcol using ntable3_stlima.xls, alpha(0.01, 0.05, 0.1) symbol(***,**,*) d
 clear
 
 *Now insert results from 2011 ECE for 2nd graders 					(WARNING: Due to confidentiality of the ECE the do file will not estimate these results)
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 
 	*Keep relevant observations
@@ -327,7 +328,7 @@ drop _merge
 
 	*Table
 	egen cfixeff=group(codmod grado_r1 seccion_r1)
-	cd "C:\data\Resultados"	
+	cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"	
 
 	cap foreach y in stmath stread{
 	cap quiet reg `y'_r2 if tcol==1 &  `y'_r1~=.
@@ -342,8 +343,8 @@ drop _merge
 ********************************************************************************
 *	7) TABLE 4
 ********************************************************************************
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
 
 *Keep relevant observations
 keep if follow_up==1
@@ -355,7 +356,7 @@ gen tcol= participated_in_lottery==1 & won_lottery==1
 global covariates  "male_r2 age_r2 sibling_r2 ysibling_r2 fathlivh_r2 fathwout_r2 mothwout_r2"
 
 egen cfixeff=group(codmod grado_r1 seccion_r1)
-cd "C:\data\Resultados"
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"
 !erase ntable4_stlima.xls
 !erase ntable4_stlima.txt 
 
@@ -373,8 +374,8 @@ outreg2 tcol using ntable4_stlima.xls, alpha(0.01, 0.05, 0.1) symbol(***,**,*) d
 **************
 *	8) TABLE 5
 **************
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
 
 *Keep relevant observations
 keep if follow_up==1
@@ -385,9 +386,9 @@ keep if pchome_r1~=. & pchome_r2~=.
 global covariates  "male_r2 age_r2 sibling_r2 ysibling_r2 fathlivh_r2 fathwout_r2 mothwout_r2"
 
 gen loswfnd= (participated_in_lottery==1 & won_lottery==0) & (wfrndtotwlott_r1>=1 & wfrndtotwlott_r1!=.)
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 
 *Generate standardized scores
@@ -401,7 +402,7 @@ gen stxo_r2=(xo_r2-mean_xo_r2)/sd_xo_r2
 
 *Table
 egen cfixeff=group(codmod grado_r1 seccion_r1)
-cd "C:\data\Resultados"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"	
 !erase ntable5_stlima.xls
 !erase ntable5_stlima.txt 
 
@@ -437,8 +438,8 @@ outreg2 loswfnd  using ntable5_stlima.xls, alpha(0.01, 0.05, 0.1) symbol(***,**,
 **************
 *	9) TABLE 6
 **************
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
 
 *Keep relevant observations
 keep if follow_up==1
@@ -449,9 +450,9 @@ keep if pchome_r1~=. & pchome_r2~=.
 global covariates  "male_r2 age_r2 sibling_r2 ysibling_r2 fathlivh_r2 fathwout_r2 mothwout_r2"
 
 gen winwfnd= (participated_in_lottery==1 & won_lottery==1) & (wfrndtotwlott_r1>=1 & wfrndtotwlott_r1!=.)
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 
 *Generate standardized scores
@@ -465,7 +466,7 @@ gen stxo_r2=(xo_r2-mean_xo_r2)/sd_xo_r2
 
 *Table
 egen cfixeff=group(codmod grado_r1 seccion_r1)
-cd "C:\data\Resultados"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"	
 !erase ntable6_stlima.xls
 !erase ntable6_stlima.txt 
 
@@ -500,8 +501,8 @@ outreg2 winwfnd  using ntable6_stlima.xls, alpha(0.01, 0.05, 0.1) symbol(***,**,
 **************
 *	10) TABLE 7
 **************
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
 set more off
 
 *Keep relevant observations
@@ -509,9 +510,9 @@ keep if follow_up==1
 keep if grado_r1>=3 & grado_r1<=6
 keep if pchome_r1~=. & pchome_r2~=.
 
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 
 *Generate standardized scores
@@ -583,7 +584,7 @@ gen DD=post*treatment_school
 xi i.pair 
 
 *Table
-cd "C:\data\Resultados"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"	
 !erase ntable7_stlima.xls
 !erase ntable7_stlima.txt
 set more off
@@ -611,14 +612,14 @@ outreg2 treatment_school using ntable7_stlima.xls, alpha(0.01, 0.05, 0.1) symbol
 clear
 
 *Add math and read for 2nd graders  
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
 
 set more off
 keep if grado_r1==2
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 gen stmath_r1=(math_r1-mean_math_r1)/sd_math_r1
 gen stread_r1=(read_r1-mean_read_r1)/sd_read_r1
@@ -665,7 +666,7 @@ gen post=round==2
 gen DD=post*treatment_school
 xi i.pair
 
-cd "C:\data\Resultados"
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"
 set more off	
 cap foreach x in  $dep_t7b {
 cap quiet reg `x' if post==0 & treatment_school==1 & reg_`x'==1
@@ -685,12 +686,12 @@ cap }
 ***************
 *	11) TABLE 8
 ***************
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
 
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 
 *Keep relevant observations
@@ -751,7 +752,7 @@ gen t_`x'=tcol*`x'
 *------
 global covariates  "male_r2 age_r2 sibling_r2 ysibling_r2 fathlivh_r2 fathwout_r2 mothwout_r2"
 egen cfixeff=group(codmod grado_r1 seccion_r1)
-cd "C:\data\Resultados"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"	
 !erase ntable8_stlima.xls
 !erase ntable8_stlima.txt 
 
@@ -794,17 +795,17 @@ clear
 ****************
 *	12) TABLE A1
 ****************
-do "C:\data\table_stlima_logs.do"
+do "/Users/simonjean/Projects/machine_learning_project/data/table_stlima_logs.do"
 
 
 ****************
 *	13) TABLE A2
 ****************
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 
 *Generate standardized scores
@@ -827,7 +828,7 @@ gen tcol=wfrndtotwlott_r1>=1 & wfrndtotwlott_r1!=.
 
 *Table
 egen cfixeff=group(codmod grado_r1 seccion_r1)
-cd "C:\data\Resultados"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"	
 !erase ntablea2_stlima.xls
 !erase ntablea2_stlima.txt 
 
@@ -853,11 +854,11 @@ outreg2 tcol using ntablea2_stlima.xls, alpha(0.01, 0.05, 0.1) symbol(***,**,*) 
 ****************
 *	14) TABLE A3
 ****************
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 
 *Generate standardized scores
@@ -880,7 +881,7 @@ gen tcol=wfrndtotwlott_r1>=1 & wfrndtotwlott_r1!=.
 
 *Table
 egen cfixeff=group(codmod grado_r1 seccion_r1)
-cd "C:\data\Resultados"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"	
 !erase ntablea3_stlima.xls
 !erase ntablea3_stlima.txt 
 
@@ -906,17 +907,17 @@ outreg2 tcol using ntablea3_stlima.xls, alpha(0.01, 0.05, 0.1) symbol(***,**,*) 
 ********************
 *	15) TABLE A4
 ********************
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
 set more off
 
 *Keep relevant observations
 keep if follow_up==1
 keep if grado_r1>=3 & grado_r1<=6
 keep if pchome_r1~=. & pchome_r2~=.
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 
 *Generate standardized scores
@@ -968,7 +969,7 @@ keep if won_lottery==0
 
 *Table
 egen cfixeff=group(pair)
-cd "C:\data\Resultados"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"	
 !erase ntablea4a_stlima.xls
 !erase ntablea4a_stlima.txt 
 
@@ -991,15 +992,15 @@ outreg2 treatment_school using ntablea4a_stlima.xls, alpha(0.01, 0.05, 0.1) symb
 }
 
 *Add math and read for 2nd graders
-cd "C:\data"	
-use "Finales\tables_stlima.dta",clear
+cd "/Users/simonjean/Projects/machine_learning_project/data"	
+use "Finales/tables_stlima.dta",clear
 set more off
 
 *Keep relevant observations
 keep if grado_r1==2
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 
 *Generate standardized scores
@@ -1032,7 +1033,7 @@ cap }
 keep if won_lottery==0
 
 *Table
-cd "C:\data\Resultados"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Resultados"	
 egen cfixeff=group(pair)
 cap foreach y in $dep_t7b {
 cap quiet reg `y'_r1 if treatment_school==1 & reg_`y'==1

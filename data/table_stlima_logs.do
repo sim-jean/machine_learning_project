@@ -1,7 +1,7 @@
 set more off
 clear all
 
-use "C:\data\Finales\table_stlima_logs.dta", clear
+use "/Users/simonjean/Projects/machine_learning_project/data/Finales/table_stlima_logs.dta", clear
 
 ****************************************
 * 1) CATEGORIES: 3-4 GRADE and 5-6 GRADE
@@ -85,15 +85,15 @@ bysort pc_home_abril: sum codest if mes ==9
 *************************************
 * 6) BY BASELINE ACADEMIC ACHIEVEMENT
 *************************************
-cd "C:\data"
-use "Finales\tables_stlima.dta",clear
+cd "/Users/simonjean/Projects/machine_learning_project/data"
+use "Finales/tables_stlima.dta",clear
 
-joinby grado_r1 using "Auxiliares\standardscores_r1.dta", unm(m) 
+joinby grado_r1 using "Auxiliares/standardscores_r1.dta", unm(m) 
 drop _merge
-joinby grado_r2 using "Auxiliares\standardscores_r2.dta", unm(m)
+joinby grado_r2 using "Auxiliares/standardscores_r2.dta", unm(m)
 drop _merge
 
-merge 1:m codest using "Finales\table_stlima_logs.dta", keep(match)
+merge 1:m codest using "Finales/table_stlima_logs.dta", keep(match)
 drop _merge
 
 *Generate Academic Achievement Groups
