@@ -3,14 +3,15 @@ cap log close
 set more off
 
 *	CHANGE DIRECTORY
-cd "C:\data"	
+cd "/Users/simonjean/Projects/machine_learning_project/data"
+
 
 
 ********************************************************************************
 *	1) XO: 3RD to 6TH GRADE 
 ********************************************************************************
 
-use "Originales\Ronda2\xo_g3-6_r2.dta", clear
+use "Originales/Ronda2/xo_g3-6_r2.dta", clear
 rename CODMOD - CODIGO_EST2, lower
 rename (codigo_est nomest) (orden_es nombr_es)
 
@@ -81,7 +82,7 @@ saveold "Intermedias/input_r2_aux1.dta",replace
 *	6) RAVEN: 3RD to 6TH GRADE
 ********************************************************************************
 
-use "Originales\Ronda2\matrices_g3-6_r2.dta", clear
+use "Originales/Ronda2/matrices_g3-6_r2.dta", clear
 rename CODMOD - CODIGO_EST2, lower
 rename (codigo_est nomest) (orden_es nombr_es)
 rename (serie_a_01 serie_a_02 serie_a_03 serie_a_04 serie_a_05 serie_a_06 serie_a_07 serie_a_08 serie_a_09 serie_a_10 serie_a_11 serie_a_12 serie_ab_01 serie_ab_02 serie_ab_03 serie_ab_04 serie_ab_05 serie_ab_06 serie_ab_07 serie_ab_08 serie_ab_09 serie_ab_10 serie_ab_11 serie_ab_12 serie_b_01 serie_b_02 serie_b_03 serie_b_04 serie_b_05 serie_b_06 serie_b_07 serie_b_08 serie_b_09 serie_b_10 serie_b_11 serie_b_12) ///
@@ -165,7 +166,7 @@ saveold "Intermedias/input_r2_aux6.dta",replace
 *	12) TEACHER ASSESSMENT: 3RD to 6TH GRADE
 ********************************************************************************
 
-use "Originales\Ronda2\percepciondocente_g3-6_r2.dta", clear
+use "Originales/Ronda2/percepciondocente_g3-6_r2.dta", clear
 rename CODMOD - CARACT_C, lower
 rename (codigo_est nomest) (orden_es nombr_es)
 
@@ -229,7 +230,7 @@ saveold "Intermedias/input_r2_aux12.dta",replace
 *	13.1)SOCIO-DEMOGRAPHIC
 ****
 
-use "Originales\Ronda2\cestudiante_g3-6_p1_r2.dta", clear
+use "Originales/Ronda2/cestudiante_g3-6_p1_r2.dta", clear
 rename CODMOD - CODIGO_EST2, lower
 rename (codigo_est nomest) (orden_es nombr_es)
 
@@ -288,7 +289,7 @@ saveold "Intermedias/input_r2_aux13_1.dta",replace
 *	13.2)COMPUTER ACCESS AND USE
 ****
 
-use "Originales\Ronda2\cestudiante_g3-6_p2_r2.dta", clear
+use "Originales/Ronda2/cestudiante_g3-6_p2_r2.dta", clear
 rename CODMOD - FICHA2, lower
 rename (codigo_est nomest) (orden_es nombr_es)
 
@@ -386,7 +387,7 @@ saveold "Intermedias/input_r2_aux13_2.dta",replace
 *	13.3)TIME USE
 ****
 
-use "Originales\Ronda2\cestudiante_g3-6_p1_r2.dta", clear
+use "Originales/Ronda2/cestudiante_g3-6_p1_r2.dta", clear
 rename CODMOD - CODIGO_EST2, lower
 rename (codigo_est nomest) (orden_es nombr_es)
 
@@ -453,7 +454,7 @@ merge 1:1 codest using  "Intermedias/input_r2_aux13_3.dta",nogen
 keep if grado>=3 & grado<=6
 saveold "Intermedias/input_r2_aux13_4a.dta",replace
 
-use "Originales\Ronda2\cestudiante_g3-6_p1_r2.dta", clear
+use "Originales/Ronda2/cestudiante_g3-6_p1_r2.dta", clear
 rename CODMOD - CODIGO_EST2, lower
 rename (codigo_est nomest) (orden_es nombr_es)
 
@@ -473,7 +474,7 @@ duplicates list codest
 * NUMBER OF FRIENDS (BEST, HOMEWORK, VISIT HOME)= NUMBER OF KIDS WHO REPORT AN STUDENT AS A FRIEND
 *------------------------------------------------------------------------------------------------- 
 merge 1:1 codest using "Intermedias/input_r2_aux13_4a.dta", nogenerate
-merge 1:1 codest using "Auxiliares\listas_final.dta", keep(match) nogenerate
+merge 1:1 codest using "Auxiliares/listas_final.dta", keep(match) nogenerate
 sort codest orden_es
 gen temp=1
 qui summ orden_es
@@ -595,7 +596,7 @@ saveold "Intermedias/input_r2_aux13_4.dta",replace
 ****
 *	13.5)SOCIAL NETWORKS: STRONG FRIENDS
 ****
-use "Originales\Ronda2\cestudiante_g3-6_p1_r2.dta", clear
+use "Originales/Ronda2/cestudiante_g3-6_p1_r2.dta", clear
 rename CODMOD - CODIGO_EST2, lower
 rename (codigo_est nomest) (orden_es nombr_es)
 
@@ -615,7 +616,7 @@ duplicates list codest
 * GENERATE NUMBER OF RECIPROCAL/STRONG FRIENDS (BEST, HOMEWORK, VISIT HOME)= NUMBER OF KIDS WHO REPORT AN STUDENT AS A FRIEND AND 
 *																			 THAT STUDENT REPORT THEM AS A FRIEND TOO. 
 *---------------------------------------------------------------------------------------------------------------------------------
-merge 1:1 codest using "Auxiliares\listas_final.dta", keep(match) nogenerate
+merge 1:1 codest using "Auxiliares/listas_final.dta", keep(match) nogenerate
 sort codest orden_es
 qui summ orden_es
 qui local j=r(max)																	/*PROVIDES THE GREATEST NUMBER FOR THE VARIABLE ORDEN_ES (THE ORDER OF THE KID IN A SECTION)*/
@@ -729,7 +730,7 @@ saveold "Intermedias/input_r2_aux13_5.dta",replace
 *	13.6)SKILLS: OBJECTIVE PC AND INTERNET TEST
 ****
 
-use "Originales\Ronda2\cestudiante_g3-6_p2_r2.dta", clear
+use "Originales/Ronda2/cestudiante_g3-6_p2_r2.dta", clear
 rename CODMOD -  CODIGO_EST2, lower
 rename (codigo_est nomest) (orden_es nombr_es)
 
@@ -812,6 +813,6 @@ rename (grado seccion) (grado_r2 seccion_r2)
 saveold "Intermedias/input_r2.dta",replace 
 
 
-cd "C:\data\Intermedias"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Intermedias"	
 !erase input_r2_*.dta
 clear all

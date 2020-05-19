@@ -5,8 +5,7 @@ set more off
 
 
 *	CHANGE DIRECTORY
-cd "C:\data"	
-
+cd "/Users/simonjean/Projects/machine_learning_project/data"
 
 ********************************************************************************
 *	4) MATH
@@ -22,12 +21,12 @@ cd "C:\data"
 
 * STANDARIZE ORDER OF VARIABLES OF FORM 2 ACCORDING TO FORM 1
 *------------------------------------------------------------
-use "Originales\Ronda1\logico_g2_f2_r1.dta",clear
+use "Originales/Ronda1/logico_g2_f2_r1.dta",clear
 rename (p5 p6 p1 p2 p3 p4 p9 p10 p11 p12 p13 p7  p8  p15 p14 p16 p17 p18 p19 p20 p25 p26 p27 p21 p22 p23 p24 p30 p29 p28 p32 p31 p34 p33) ///
        (p1 p2 p3 p4	p5 p6 p7 p8	 p9	 p10 p11 p12 p13 p14 p15 p16 p17 p18 p19 p20 p21 p22 p23 p24 p25 p26 p27 p28 p29 p30 p31 p32 p33 p34)
 
 gen forma=2
-append using "Originales\Ronda1\logico_g2_f1_r1.dta"
+append using "Originales/Ronda1/logico_g2_f1_r1.dta"
 replace forma=1 if forma==.
 
 
@@ -113,12 +112,12 @@ saveold "Intermedias/input_r1_aux4_1.dta",replace
 
 * STANDARIZE ORDER OF VARIABLES OF FORM 2 ACCORDING TO FORM 1
 *------------------------------------------------------------
-use "Originales\Ronda1\logico_g3_f2_r1.dta",clear
+use "Originales/Ronda1/logico_g3_f2_r1.dta",clear
 rename (p1 p4 p5 p6 p7 p2 p3 p8 p9 p10 p11 p16 p17 p18 p12 p13 p14 p15 p19 p20 p21 p22 p23 p24 p26 p25 p27 p29 p28 p30 p31 p33 p34 p32 p35) ///
 	   (p1 p2 p3 p4	p5 p6 p7 p8	p9 p10 p11 p12 p13 p14 p15 p16 p17 p18 p19 p20 p21 p22 p23 p24 p25 p26 p27 p28 p29 p30 p31 p32 p33 p34 p35)
 
 gen forma=2
-append using "Originales\Ronda1\logico_g3_f1_r1.dta"
+append using "Originales/Ronda1/logico_g3_f1_r1.dta"
 replace forma=1 if forma==.
 
 
@@ -206,7 +205,7 @@ saveold "Intermedias/input_r1_aux4_2.dta",replace
 ****
 *	4.3) GENERATE SCORES FOR MATH: 4TH GRADE
 ****
-use "Originales\Ronda1\logico_g4_r1.dta",clear
+use "Originales/Ronda1/logico_g4_r1.dta",clear
 
 * DROP OBSERVATIONS WITH MISSING IN ALL THE RELEVANT QUESTIONS
 *-------------------------------------------------------------
@@ -280,7 +279,7 @@ saveold "Intermedias/input_r1_aux4_3.dta",replace
 ****
 *	4.4) GENERATE SCORES FOR MATH: 5TH GRADE
 ****
-use "Originales\Ronda1\logico_g5_r1.dta",clear
+use "Originales/Ronda1/logico_g5_r1.dta",clear
 
 
 * DROP OBSERVATIONS WITH MISSING IN ALL THE RELEVANT QUESTIONS
@@ -370,7 +369,7 @@ saveold "Intermedias/input_r1_aux4_4.dta",replace
 ****
 *	4.5) GENERATE SCORES FOR MATH: 6TH GRADE
 ****
-use "Originales\Ronda1\logico_g6_r1.dta",clear
+use "Originales/Ronda1/logico_g6_r1.dta",clear
 
 
 * DROP OBSERVATIONS WITH MISSING IN ALL THE RELEVANT QUESTIONS
@@ -453,12 +452,12 @@ saveold "Intermedias/input_r1_aux4_5.dta",replace
 
 * STANDARIZE ORDER OF VARIABLES OF FORM 2 ACCORDING TO FORM 1
 *------------------------------------------------------------
-use "Originales\Ronda1\lectora_g2_f2_r1.dta",clear
+use "Originales/Ronda1/lectora_g2_f2_r1.dta",clear
 rename (p6 p7 p1 p2 p3 p4 p5 p9 p8 p11 p12 p13 p10 p14 p150 p16 p19 p20 p17 p18 p21 p22 p23 p24 p250 p26) ///
        (p1 p2 p3 p4 p5 p6 p7 p8	p9 p10 p11 p12 p13 p14 p15 p16	p17	p18	p19	p20	p21	p22	p23	p24	p25	 p26)
 
 gen forma=2
-append using "Originales\Ronda1\lectora_g2_f1_r1.dta"
+append using "Originales/Ronda1/lectora_g2_f1_r1.dta"
 replace forma=1 if forma==.
 
 
@@ -541,12 +540,12 @@ saveold "Intermedias/input_r1_aux5_1.dta",replace
 
 * STANDARIZE ORDER OF VARIABLES OF FORM 2 ACCORDING TO FORM 1
 *------------------------------------------------------------
-use "Originales\Ronda1\lectora_g3_f2_r1.dta",clear
+use "Originales/Ronda1/lectora_g3_f2_r1.dta",clear
 rename (p3 p4 p5 p6 p7 p1 p2 p8 p9 p10 p11 p13 p12 p19 p20 p21 p14 p15 p16 p17 p18 p25 p26 p27 p28 p29 p30 p22 p23 p24) ///
        (p1 p2 p3 p4 p5 p6 p7 p8	p9 p10 p11 p12 p13 p14 p15 p16 p17 p18 p19 p20 p21 p22 p23 p24 p25 p26 p27 p28 p29 p30)
 
 gen forma=2
-append using "Originales\Ronda1\lectora_g3_f1_r1.dta"
+append using "Originales/Ronda1/lectora_g3_f1_r1.dta"
 replace forma=1 if forma==.
 
 
@@ -630,7 +629,7 @@ saveold "Intermedias/input_r1_aux5_2.dta",replace
 ****
 *	5.3) GENERATE SCORES FOR LECTORA: 4TH GRADE
 ****
-use "Originales\Ronda1\lectora_g4_r1.dta",clear
+use "Originales/Ronda1/lectora_g4_r1.dta",clear
 rename CODMOD - FICHA2, lower
 
 
@@ -706,7 +705,7 @@ saveold "Intermedias/input_r1_aux5_3.dta",replace
 ****
 *	5.4) GENERATE SCORES FOR LECTORA: 5TH GRADE
 ****
-use "Originales\Ronda1\lectora_g5_r1.dta",clear
+use "Originales/Ronda1/lectora_g5_r1.dta",clear
 rename CODMOD - FICHA2, lower
 
 
@@ -780,7 +779,7 @@ saveold "Intermedias/input_r1_aux5_4.dta",replace
 ****
 *	5.5) GENERATE SCORES FOR LECTORA: 6TH GRADE
 ****
-use "Originales\Ronda1\lectora_g6_r1.dta",clear
+use "Originales/Ronda1/lectora_g6_r1.dta",clear
 rename CODMOD - FICHA2, lower
 
 
@@ -853,7 +852,7 @@ saveold "Intermedias/input_r1_aux5_5.dta",replace
 ********************************************************************************
 *	6) RAVEN: 2ND to 6TH GRADE
 ********************************************************************************
-use "Originales\Ronda1\matrices_g3-6_r1.dta", clear
+use "Originales/Ronda1/matrices_g3-6_r1.dta", clear
 drop g_serie__b - serieB
 rename (serie_a serie__a serie__b serie__c serie__d serie__e serie__f serie__g serie__h serie__i serie__j serie__k serie_ab serie__l serie__m serie__n serie__o serie__p serie__q serie__r serie__s serie__t serie__u serie__v serie_b serie__w serie__x serie__y serie__z serie_aa serie_ac serie_ad serie_ae serie_af serie_ag serie_ah) ///
 	   (p1		p2		 p3	  	  p4	   p5		p6		 p7		  p8	   p9		p10      p11      p12      p13      p14      p15      p16	   p17		p18      p19	  p20	   p21  	p22 	 p23	  p24      p25	   p26		p27 	 p28	  p29      p30      p31      p32      p33      p34      p35      p36)
@@ -936,7 +935,7 @@ saveold "Intermedias/input_r1_aux6.dta",replace
 ********************************************************************************
 *	12) TEACHER ASSESSMENT: 1ST to 6TH GRADE
 ********************************************************************************
-use "Originales\Ronda1\percepciondocente_g3-6_r1.dta", clear
+use "Originales/Ronda1/percepciondocente_g3-6_r1.dta", clear
 rename CODMOD - CARACT_C, lower
 
 
@@ -1004,7 +1003,7 @@ saveold "Intermedias/input_r1_aux12.dta",replace
 ****
 *	13.2)COMPUTER ACCESS AND USE
 ****
-use "Originales\Ronda1\cestudiante_g3-6_p2_r1.dta", clear
+use "Originales/Ronda1/cestudiante_g3-6_p2_r1.dta", clear
 rename CODMOD - FICHA2, lower
 
 
@@ -1099,7 +1098,7 @@ saveold "Intermedias/input_r1_aux13_2.dta",replace
 ****
 *	13.3)TIME USE 
 ****
-use "Originales\Ronda1\cestudiante_g3-6_p1_r1.dta", clear
+use "Originales/Ronda1/cestudiante_g3-6_p1_r1.dta", clear
 rename CODMOD - DIGITADOR, lower
 rename orden_est  orden_es 
 
@@ -1174,7 +1173,7 @@ merge 1:1 codest using "Intermedias/input_r1_aux13_3.dta",nogen
 keep if grado>=3 & grado<=6
 saveold "Intermedias/input_r1_aux13_4a.dta",replace
 
-use "Originales\Ronda1\cestudiante_g3-6_p1_r1.dta", clear
+use "Originales/Ronda1/cestudiante_g3-6_p1_r1.dta", clear
 rename CODMOD - DIGITADOR, lower
 rename orden_est  orden_es 
 
@@ -1195,7 +1194,7 @@ duplicates list codest
 * GENERATE NUMBER OF ONE-WAY/WEAK FRIENDS (BEST, HOMEWORK, VISIT HOME)= NUMBER OF KIDS WHO REPORT AN STUDENT AS A FRIEND
 *----------------------------------------------------------------------------------------------------------------------- 
 merge 1:1 codest using "Intermedias/input_r1_aux13_4a.dta", nogenerate
-merge 1:1 codest using "Auxiliares\listas_final.dta", keep(match) nogenerate
+merge 1:1 codest using "Auxiliares/listas_final.dta", keep(match) nogenerate
 sort codest orden_es
 gen temp=1
 rename (p6_1_c 	  p6_2_c 	p6_3_c 	  p6_4_c 	p7_1_c    p7_2_c 	p7_3_c    p7_4_c 	p8_1_c    p8_2_c 	p8_3_c    p8_4_c) ///
@@ -1318,7 +1317,7 @@ saveold "Intermedias/input_r1_aux13_4.dta",replace
 ****
 *	13.5)SOCIAL NETWORKS: STRONG FRIENDS
 ****
-use "Originales\Ronda1\cestudiante_g3-6_p1_r1.dta", clear
+use "Originales/Ronda1/cestudiante_g3-6_p1_r1.dta", clear
 rename CODMOD - DIGITADOR, lower
 rename orden_est  orden_es 
 
@@ -1339,7 +1338,7 @@ duplicates list codest
 *-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 * GENERATE NUMBER OF RECIPROCAL/STRONG FRIENDS (BEST, HOMEWORK, VISIT HOME)= NUMBER OF KIDS WHO REPORT AN STUDENT AS A FRIEND AND THAT STUDENT REPORT THEM AS A FRIEND TOO. 
 *-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-merge 1:1 codest using "Auxiliares\listas_final.dta", keep(match) nogenerate
+merge 1:1 codest using "Auxiliares/listas_final.dta", keep(match) nogenerate
 sort codest orden_es
 qui summ orden_es
 qui local j=r(max)																															/*PROVIDES THE GREATEST NUMBER FOR THE VARIABLE ORDEN_ES (THE ORDER OF THE KID IN A SECTION)*/
@@ -1451,7 +1450,7 @@ saveold "Intermedias/input_r1_aux13_5.dta",replace
 ****
 *	13.6)SKILLS: OBJECTIVE PC AND INTERNET TEST, AND SELF-REPORTED PC AND INTERNET SKILLS
 ****
-use "Originales\Ronda1\cestudiante_g3-6_p2_r1.dta", clear
+use "Originales/Ronda1/cestudiante_g3-6_p2_r1.dta", clear
 rename CODMOD - FICHA2, lower
 
 
@@ -1527,6 +1526,6 @@ merge 1:1 codest using "Intermedias/input_r1_aux13_6.dta",nogen
 rename (grado seccion) (grado_r1 seccion_r1)
 saveold "Intermedias/input_r1.dta",replace 
 
-cd "C:\data\Intermedias"	
+cd "/Users/simonjean/Projects/machine_learning_project/data/Intermedias"	
 !erase input_r1_*.dta
 clear all
