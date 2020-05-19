@@ -99,7 +99,7 @@ table_6 <- mutate(table_6, winwfnd=ifelse(
   (participated_in_lottery==1 & won_lottery==1) & 
     (wfrndtotwlott_r1>=1 & !is.na(wfrndtotwlott_r1)),1,0))
 
-#Generate standardized scores
+#Generate standardized scores including stxo
 table_6 <- mutate(table_6, stpcotskill_r1=(pcotskill_r1-mean(pcotskill_r1))/sd(pcotskill_r1))
 table_6 <- mutate(table_6, stpcsrskill_r1=(pcsrskill_r1-mean(pcsrskill_r1))/sd(pcsrskill_r1))
 table_6 <- mutate(table_6, straven_r1=(raven_r1-mean(raven_r1,na.rm=T))/sd(raven_r1, na.rm=T))
