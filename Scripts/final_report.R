@@ -86,13 +86,13 @@ table_6 <- mutate(table_6, winwfnd=ifelse(
     (wfrndtotwlott_r1>=1 & !is.na(wfrndtotwlott_r1)),1,0))
 
 #Generate standardized scores
-table_6 <- mutate(table_6, stpcotskill_r1=(pcotskill_r1-mean(pcotskill_r1))/sd(pcotskill_r1))
-table_6 <- mutate(table_6, stpcsrskill_r1=(pcsrskill_r1-mean(pcsrskill_r1))/sd(pcsrskill_r1))
-table_6 <- mutate(table_6, straven_r1=(raven_r1-mean(raven_r1))/sd(raven_r1))
-table_6 <- mutate(table_6, stpcotskill_r2=(pcotskill_r2-mean(pcotskill_r2))/sd(pcotskill_r2))
-table_6 <- mutate(table_6, stpcsrskill_r2=(pcsrskill_r2-mean(pcsrskill_r2))/sd(pcsrskill_r2))
-table_6 <- mutate(table_6, straven_r2=(raven_r2-mean(raven_r2))/sd(raven_r2))
-table_6 <- mutate(table_6, stxo_r2=(xo_r2-mean(xo_r2))/sd(xo_r2))
+table_6 <- mutate(table_6, stpcotskill_r1=(pcotskill_r1-mean(pcotskill_r1, na.rm=TRUE))/sd(pcotskill_r1, na.rm=TRUE))
+table_6 <- mutate(table_6, stpcsrskill_r1=(pcsrskill_r1-mean(pcsrskill_r1, na.rm=TRUE))/sd(pcsrskill_r1, na.rm=TRUE))
+table_6 <- mutate(table_6, straven_r1=(raven_r1-mean(raven_r1, na.rm=TRUE))/sd(raven_r1, na.rm=TRUE))
+table_6 <- mutate(table_6, stpcotskill_r2=(pcotskill_r2-mean(pcotskill_r2, na.rm=TRUE))/sd(pcotskill_r2, na.rm=TRUE))
+table_6 <- mutate(table_6, stpcsrskill_r2=(pcsrskill_r2-mean(pcsrskill_r2, na.rm=TRUE))/sd(pcsrskill_r2, na.rm=TRUE))
+table_6 <- mutate(table_6, straven_r2=(raven_r2-mean(raven_r2, na.rm=TRUE))/sd(raven_r2, na.rm=TRUE))
+table_6 <- mutate(table_6, stxo_r2=(xo_r2-mean(xo_r2, na.rm=TRUE))/sd(xo_r2, na.rm=TRUE))
 
 
 
@@ -109,8 +109,8 @@ table_6 <- mutate(table_6, codmod=as.factor(codmod))
 
 #Column 3
 
-dependent <- c("pchome", "pcuweek", "pcuyest", "stpcotskill",
-               "stpcsrskill", "friendh", "efforth", "eduexpt")
+dependent <- c("pchome", "pcuweek", "pcuyest", "stxo", "stpcotskill",
+               "stpcsrskill", "straven", "friendh", "efforth", "eduexpt")
 
 covariates <- c("winwfnd","wfrndtotplott_r1", "male_r2", "age_r2", 
                 "sibling_r2", "ysibling_r2","fathlivh_r2", "fathwout_r2",
@@ -119,19 +119,23 @@ covariates <- c("winwfnd","wfrndtotplott_r1", "male_r2", "age_r2",
 Table6_C3 <- matrix(NA, nrow = length(dependent), ncol = 3)
 
 for (i in 1:length(dependent)){
-
-aux <- as.formula(paste(paste(paste(dependent[i],"r2",sep="_"), 
-                        paste(c(paste(dependent[i],"r1",sep="_"),covariates), collapse = ' + '), 
-                        sep = " ~ "),"cfixeff",0,"codmod",sep = " | "))
-
-aux_reg <- felm(aux, table_6)
-Table6_C3[i,1] <- dependent[i]
-Table6_C3[i,2] <- aux_reg[["coefficients"]][2]
-Table6_C3[i,3] <- aux_reg[["N"]]
+  if (dependent[i]!="stxo"){
+    aux <- as.formula(paste(paste(paste(dependent[i],"r2",sep="_"), 
+                                  paste(c(paste(dependent[i],"r1",sep="_"),covariates), collapse = ' + '), 
+                                  sep = " ~ "),"cfixeff",0,"codmod",sep = " | "))
+  }
+  if (dependent[i]=="stxo"){
+    aux <- as.formula(paste(paste(paste(dependent[i],"r2",sep="_"), 
+                                  paste(covariates, collapse = ' + '), 
+                                  sep = " ~ "),"cfixeff",0,"codmod",sep = " | "))
+  }
+  
+  aux_reg <- felm(aux, table_6)
+  
+  Table6_C3[i,1] <- dependent[i]
+  Table6_C3[i,2] <- aux_reg[["coefficients"]][2]
+  Table6_C3[i,3] <- aux_reg[["N"]]
 }
-
-# note: remember that variables related to test were not available for the analysis
-# specifically: Objective OLPC test (Digital skills), and Raven's progressive matrices (Cognitive skills)
 
 print(Table6_C3)
 
