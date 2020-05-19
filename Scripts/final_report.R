@@ -9,6 +9,7 @@ tables_stlima <- read.dta13("./tables_stlima.dta")
 #######################################################
 ################   Table 2   ##########################
 #######################################################
+# SAMR#
 
 #Keep relevant observations
 table_2 <- subset(tables_stlima, follow_up==1)
