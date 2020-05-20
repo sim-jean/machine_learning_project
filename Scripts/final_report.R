@@ -214,12 +214,13 @@ table_7 <- mutate(table_7, factor_pchome=ifelse(participated_in_lottery==1,lost_
 #NOTE: variable "round" not available - cannot reproduce the table 7
 
 # Generate the reg variables
-kids_both<-function(i){
+both_periods<-function(i){
   varname<-paste0('reg_',i)
-  table_7[[varname]]<-ifelse(!is.na(paste0(i,'_r1'))&!is.na(paste0(i,'_r2')),1,0)
+  table_7[[varname]]<-ifelse( !is.na(paste0(i,'_r1')) & !is.na(paste0(i,'_r2')), 1, 0)
+  table_7
 }
-for(i in dep_t7){
-  kids_both(i)
+for(j in dep_t7){
+  both_periods(i)
 }
 
 # Generate the columns to use for reshape
@@ -236,9 +237,9 @@ c<-lapply(dep_t7,function(i){
 # Reshape : 
 # - Need to keep the variables
 # - But the dependent
-# - And swith the dependent variable from _r1 & _r2 to a single column, with an other column for round
+# - And switch the dependent variable from _r1 & _r2 to a single column, with an other column for round
 # -> Kind of tricky to do
-
+pivot_longer(table_7,cols=c,names_to=dep_t7, names_sep = )
 
 # Table 7 uses an index variable: post = 1(round==2) 
 # I didn't find the variable round, which determines the kids that were interview at the post-treatment period
