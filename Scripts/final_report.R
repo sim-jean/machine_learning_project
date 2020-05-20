@@ -1,4 +1,5 @@
 rm(list = ls())
+
 list.of.packages=c('readstata13','dplyr','lfe','broom','doBy')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
@@ -16,6 +17,7 @@ tables_stlima <- read.dta13("data/Finales/tables_stlima.dta")
 #######################################################
 ################   Table 2   ##########################
 #######################################################
+
 
 #Keep relevant observations
 table_2 <- subset(tables_stlima, follow_up==1)
@@ -38,6 +40,7 @@ table_2 <- mutate(table_2, tcol= ifelse(participated_in_lottery==1 & won_lottery
 
 ##############################
 ##############################
+
 # This line creates class fixed effects key
 # Codigo modular : random number identifying a school in Peru
 # Grado : school level eg 6e, 5e...
@@ -62,6 +65,7 @@ covariates <- c("tcol","male_r2", "age_r2", "sibling_r2", "ysibling_r2",
                 "fathlivh_r2", "fathwout_r2","mothwout_r2")
 
 
+
 Table2_C3 <- matrix(NA, nrow = length(dependent), ncol = 4)
 
 for (i in 1:length(dependent)){
@@ -73,6 +77,7 @@ for (i in 1:length(dependent)){
   aux_reg <- felm(aux, table_2)
   Table2_C3[i,1] <- dependent[i]
   Table2_C3[i,2] <- aux_reg[["coefficients"]][2]
+
   Table2_C3[i,3] <- coef(summary(aux_reg))[1,2]
   Table2_C3[i,4] <- aux_reg[["N"]]
 }
@@ -99,6 +104,7 @@ table_6 <- mutate(table_6, winwfnd=ifelse(
   (participated_in_lottery==1 & won_lottery==1) & 
     (wfrndtotwlott_r1>=1 & !is.na(wfrndtotwlott_r1)),1,0))
 
+
 #Generate standardized scores including stxo
 table_6 <- mutate(table_6, stpcotskill_r1=(pcotskill_r1-mean(pcotskill_r1))/sd(pcotskill_r1))
 table_6 <- mutate(table_6, stpcsrskill_r1=(pcsrskill_r1-mean(pcsrskill_r1))/sd(pcsrskill_r1))
@@ -122,12 +128,15 @@ table_6 <- mutate(table_6, codmod=as.factor(codmod))
 
 #Column 3
 
+
 dependent <- c("pchome", "pcuweek", "pcuyest", "stpcotskill","stxo","straven",
                "stpcsrskill", "friendh", "efforth", "eduexpt")
 
 covariates <- c("winwfnd","wfrndtotplott_r1", "male_r2", "age_r2", 
                 "sibling_r2", "ysibling_r2","fathlivh_r2", "fathwout_r2",
                 "mothwout_r2")
+
+
 
 Table6_C3 <- matrix(NA, nrow = length(dependent), ncol = 4)
 
@@ -148,6 +157,8 @@ for (i in 1:length(dependent)){
 aux_reg <- felm(aux, table_6)
 Table6_C3[i,1] <- dependent[i]
 Table6_C3[i,2] <- aux_reg[["coefficients"]][2]
+
+
 Table6_C3[i,3] <- coef(summary(aux_reg))[1,2]
 Table6_C3[i,4] <- aux_reg[["N"]]
 }
@@ -161,13 +172,22 @@ print(Table6_C3)
 ################   Table 7   ##########################
 #######################################################
 
+
+
+
+
+
+data_table_7<-read.dta13("data/data_table_7.dta")
+
 table_7 <- subset(tables_stlima, follow_up==1)
 table_7 <- subset(table_7, grado_r1>=3 & grado_r1<=6)
 table_7 <- subset(table_7, !is.na(pchome_r1) & !is.na(pchome_r2))
 
+
 #Generate standardized scores
-table_7 <- mutate(table_7, stpcotskill_r1=(pcotskill_r1-mean(pcotskill_r1))/sd(pcotskill_r1))
+table_7 <- mutate(table_7, 'stpcotskill_r1'=(pcotskill_r1-mean(pcotskill_r1))/sd(pcotskill_r1))
 table_7 <- mutate(table_7, stpcsrskill_r1=(pcsrskill_r1-mean(pcsrskill_r1))/sd(pcsrskill_r1))
+
 table_7 <- mutate(table_7, straven_r1=(raven_r1-mean(raven_r1,na.rm=T))/sd(raven_r1,na.rm=T))
 table_7 <- mutate(table_7, stpcotskill_r2=(pcotskill_r2-mean(pcotskill_r2))/sd(pcotskill_r2))
 table_7 <- mutate(table_7, stpcsrskill_r2=(pcsrskill_r2-mean(pcsrskill_r2))/sd(pcsrskill_r2))
@@ -193,9 +213,36 @@ table_7 <- mutate(table_7, factor_pchome=ifelse(participated_in_lottery==1,lost_
 
 #NOTE: variable "round" not available - cannot reproduce the table 7
 
+# Generate the reg variables
+both_periods<-function(i){
+  varname<-paste0('reg_',i)
+  table_7[[varname]]<-ifelse( !is.na(paste0(i,'_r1')) & !is.na(paste0(i,'_r2')), 1, 0)
+  table_7
+}
+for(j in dep_t7){
+  both_periods(i)
+}
+
+# Generate the columns to use for reshape
+c<-lapply(dep_t7,function(i){
+  name1<-paste0(i,'_r1')
+  name2<-paste0(i,'_r2')
+  df<-tibble(name1,name2)
+  return(df)
+})%>%bind_cols()%>% 
+  slice(1)%>%
+  c(., recursive=TRUE) %>%
+  unname
+
+# Reshape : 
+# - Need to keep the variables
+# - But the dependent
+# - And switch the dependent variable from _r1 & _r2 to a single column, with an other column for round
+# -> Kind of tricky to do
+pivot_longer(table_7,cols=c,names_to=dep_t7, names_sep = )
+
 # Table 7 uses an index variable: post = 1(round==2) 
 # I didn't find the variable round, which determines the kids that were interview at the post-treatment period
 # Although a variable named (reg_`x') is constructed to determine the response in each period for the different dependent variables
 # I guess we cannot assume to infer the round variable based on the reg_`x` because non-answered questions, doesn't imply attrition, or non-compliance in the post treatment period.
-
 
