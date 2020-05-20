@@ -172,12 +172,20 @@ print(Table6_C3)
 ################   Table 7   ##########################
 #######################################################
 
+
+
+
+
+
+data_table_7<-read.dta13("data/data_table_7.dta")
+
 table_7 <- subset(tables_stlima, follow_up==1)
 table_7 <- subset(table_7, grado_r1>=3 & grado_r1<=6)
 table_7 <- subset(table_7, !is.na(pchome_r1) & !is.na(pchome_r2))
 
+
 #Generate standardized scores
-table_7 <- mutate(table_7, stpcotskill_r1=(pcotskill_r1-mean(pcotskill_r1))/sd(pcotskill_r1))
+table_7 <- mutate(table_7, 'stpcotskill_r1'=(pcotskill_r1-mean(pcotskill_r1))/sd(pcotskill_r1))
 table_7 <- mutate(table_7, stpcsrskill_r1=(pcsrskill_r1-mean(pcsrskill_r1))/sd(pcsrskill_r1))
 
 table_7 <- mutate(table_7, straven_r1=(raven_r1-mean(raven_r1,na.rm=T))/sd(raven_r1,na.rm=T))
@@ -205,9 +213,35 @@ table_7 <- mutate(table_7, factor_pchome=ifelse(participated_in_lottery==1,lost_
 
 #NOTE: variable "round" not available - cannot reproduce the table 7
 
+# Generate the reg variables
+kids_both<-function(i){
+  varname<-paste0('reg_',i)
+  table_7[[varname]]<-ifelse(!is.na(paste0(i,'_r1'))&!is.na(paste0(i,'_r2')),1,0)
+}
+for(i in dep_t7){
+  kids_both(i)
+}
+
+# Generate the columns to use for reshape
+c<-lapply(dep_t7,function(i){
+  name1<-paste0(i,'_r1')
+  name2<-paste0(i,'_r2')
+  df<-tibble(name1,name2)
+  return(df)
+})%>%bind_cols()%>% 
+  slice(1)%>%
+  c(., recursive=TRUE) %>%
+  unname
+
+# Reshape : 
+# - Need to keep the variables
+# - But the dependent
+# - And swith the dependent variable from _r1 & _r2 to a single column, with an other column for round
+# -> Kind of tricky to do
+
+
 # Table 7 uses an index variable: post = 1(round==2) 
 # I didn't find the variable round, which determines the kids that were interview at the post-treatment period
 # Although a variable named (reg_`x') is constructed to determine the response in each period for the different dependent variables
 # I guess we cannot assume to infer the round variable based on the reg_`x` because non-answered questions, doesn't imply attrition, or non-compliance in the post treatment period.
-
 
