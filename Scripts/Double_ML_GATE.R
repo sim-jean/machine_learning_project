@@ -26,6 +26,21 @@ df %>% summarise_all(funs(sum(is.na(.))))
 
 df <- na.omit(df) # We omit the observations with missing variables as they don't work with SL
 
+#################
+### NAIVE OLS ###
+#################
+
+sl_lm = SuperLearner(Y = Y$stpcotskill_r2, 
+                     X = data.frame(X=X, W, W*X), 
+                     family = binomial(), # We use binomial because the outcome variable is binary
+                     SL.library = "SL.lm", 
+                     cvControl = list(V=0))
+
+summary(ATE)
+summary(sl_lm$fitLibrary$SL.lm_All$object)
+
+
+
 #############
 ### GATES ###
 #############
