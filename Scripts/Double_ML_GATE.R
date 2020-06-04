@@ -32,14 +32,15 @@ df <- na.omit(df) # We omit the observations with missing variables as they don'
 
 X <- as.numeric(df$won_lottery)
 
-# W <- df[,1:73]
-# W <- W[, !names(df) %in% dependent]
-W <- df[, names(df) %in% covariates]
+W <- df[,1:73]
+W <- W[, !names(df) %in% dependent]
+# W <- df[, names(df) %in% covariates]
 Y <- df$pchome_r2
 Q = 4
 prop_scores = F
 
-
+gates <- function(Y, W, X, Q=4, prop_scores=F) {
+  
   ### STEP 1: split the dataset into two sets, 1 and 2 (50/50)
   split <- createFolds(1:length(Y), k=2)[[1]]
   
@@ -53,20 +54,20 @@ prop_scores = F
   Wb = W[-split, ]
   
   ### STEP 2a: (Propensity score) On set A, train a model to predict X using W. Predict on set B.
-  #  if (prop_scores==T) {
-  #    sl_w1 = SuperLearner(Y = Xa, 
-  #                         X = Wa, 
-  #                         newX = Wb, 
-  #                         family = binomial(), 
-  #                         SL.library = "SL.xgboost", 
-  #                         cvControl = list(V=0))
-  #    
-  #    p <- sl_w1$SL.predict
-  #  } else {
-  #    p <- rep(mean(Xa), nrow(Wb))
-  #  }
-  p <- rep(mean(Xa), nrow(Wb))
-  ### STEP 2b let D = W(set B) - propensity score.
+  if (prop_scores==T) {
+    sl_w1 = SuperLearner(Y = Xa, 
+                         X = Wa, 
+                         newX = Wb, 
+                         family = binomial(), 
+                         SL.library = "SL.xgboost", 
+                         cvControl = list(V=0))
+    
+    p <- sl_w1$SL.predict
+  } else {
+    p <- rep(mean(Xa), length(Xb))
+  }
+  
+  ### STEP 2b let D = W(set 😎 - propensity score.
   D <- Xb-p
   
   ### STEP 3a: Get CATE (for example using causal forests) on set A. Predict on set B.
@@ -101,78 +102,7 @@ prop_scores = F
     factor()
   
   ### STEP 4: Create a dataframe with Y, W (set B), D and G. Regress Y on group membership variables and covariates. 
-  df <- data.frame(Y=Yb, Wb, D, G)
-  
-  Wnames <- paste(colnames(Wb), collapse="+")
-  fml <- paste("Y ~",Wnames,"+ D:G")
-  model <- lm(fml, df, weights = 1/(p*(1-p))) 
-  
-
-
-gates <- function(Y, W, X, Q=4, prop_scores) {
-  
-  ### STEP 1: split the dataset into two sets, 1 and 2 (50/50)
-  split <- createFolds(1:length(Y), k=2)[[1]]
-  
-  Ya = Y[split]
-  Yb = Y[-split]
-  
-  Xa = X[split]
-  Xb = X[-split]
-  
-  Wa = W[split, ]
-  Wb = W[-split, ]
-  
-  ### STEP 2a: (Propensity score) On set A, train a model to predict X using W. Predict on set B.
-#  if (prop_scores==T) {
-#    sl_w1 = SuperLearner(Y = Xa, 
-#                         X = Wa, 
-#                         newX = Wb, 
-#                         family = binomial(), 
-#                         SL.library = "SL.xgboost", 
-#                         cvControl = list(V=0))
-#    
-#    p <- sl_w1$SL.predict
-#  } else {
-#    p <- rep(mean(Xa), nrow(Wb))
-#  }
-  p <- rep(mean(Xa), nrow(Wb))
-  ### STEP 2b let D = W(set B) - propensity score.
-  D <- Xb-p
-  
-  ### STEP 3a: Get CATE (for example using causal forests) on set A. Predict on set B.
-  tree_fml <- as.formula(paste("Y", paste(names(Wa), collapse = ' + '), sep = " ~ "))
-  cf <- causalForest(tree_fml,
-                     data=data.frame(Y=Ya, Wa), 
-                     treatment=Xa, 
-                     split.Rule="CT", 
-                     split.Honest=T,  
-                     split.Bucket=T, 
-                     bucketNum = 5,
-                     bucketMax = 100, 
-                     cv.option="CT", 
-                     cv.Honest=T, 
-                     minsize = 2, 
-                     split.alpha = 0.5, 
-                     cv.alpha = 0.5,
-                     sample.size.total = floor(nrow(Wa) / 2), 
-                     sample.size.train.frac = .5,
-                     mtry = ceiling(ncol(W1)/3), 
-                     nodesize = 5, 
-                     num.trees = 10, 
-                     ncov_sample = ncol(Wa), 
-                     ncolx = ncol(Wa))
-  
-  cate_cf <- predict(cf, newdata = Wb, type="vector")
-  
-  ### STEP 3b: divide the cate estimates into Q tiles, and call this object G. 
-  # Divide observations into n tiles
-  G <- data.frame(cate_cf) %>% # replace cate_cf with the name of your predictions object
-    ntile(Q) %>%  # Divide observations into Q-tiles
-    factor()
-  
-  ### STEP 4: Create a dataframe with Y, W (set B), D and G. Regress Y on group membership variables and covariates. 
-  df <- data.frame(Y=Yb, Wb, D, G)
+  df <- data.frame(Y=Yb, Wb, D, G, p)
   
   Wnames <- paste(colnames(Wb), collapse="+")
   fml <- paste("Y ~",Wnames,"+ D:G")
@@ -180,6 +110,11 @@ gates <- function(Y, W, X, Q=4, prop_scores) {
   
   return(model) 
 }
+
+a <- gates(Y,W,X,Q=4, prop_scores = F)
+
+table_from_gates(a)
+#Turn the GATES into a nice table:
 
 table_from_gates <-function(model) {
   thetahat <- model%>% 
@@ -197,10 +132,11 @@ table_from_gates <-function(model) {
   return(res)
 }
 
-output <- rerun(10, table_from_gates(gates(Y, W, X, prop_scores = F))) %>% # Increase reruns in practice! 
+#Repeat for inference:
+
+output <- rerun(10, table_from_gates(gates(Y, W, X))) %>% # Increase reruns in practice!
   bind_rows %>%
   group_by(coefficient) %>%
   summarize_all(median)
 
 output
-
