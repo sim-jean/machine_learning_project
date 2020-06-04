@@ -189,7 +189,7 @@ CT_dat <- read.dta13("C:/Users/Carlos Leon/Desktop/PSE/Second semester/Machine L
 dependent1 <- c("stxo", "stpcotskill", "stpcsrskill", "straven")
 
 for (i in 1:length(dependent1)){
-
+set.seed(1234)
 folds = createFolds(1:nrow(CT_dat), k=2)
 y <- CT_dat[, names(CT_dat) %in% paste(dependent1[i],"r2",sep = "_")]
 x <- CT_dat[, names(CT_dat) %in% "tcol"]
@@ -344,9 +344,9 @@ m_paper %>% ggplot(aes(x=factor(cate_quintile), y=value)) +
   facet_wrap(~variable, nrow = 3) + 
   geom_bar(aes(fill=factor(cate_quintile)), stat="identity") +
   geom_errorbar(limits_paper, width=.1) + 
-  ggtitle("Covariate values across predicted treatment effect quantiles (var. incl. paper)") 
+  ggtitle(paste("Covariates across predicted treatment",dependent1[i],sep=" - ")) 
 
-ggsave(paste(dependent1[i],"report_paper",sep="_"), device="png",  plot = last_plot(),
+ggsave(paste(dependent1[i],"report_paper.png",sep="_"), device="png",  plot = last_plot(),
        path = "./")
 
 ##### Variables not reported in the paper
@@ -363,9 +363,9 @@ for (j in 1:7){
   m_aux %>% ggplot(aes(x=factor(cate_quintile), y=value)) +
   facet_wrap(~variable, nrow = 4) + 
   geom_bar(aes(fill=factor(cate_quintile)), stat="identity") +
-  ggtitle("Covariate values across predicted treatment effect quantiles (var. not incl. paper)") 
+  ggtitle(paste("Covariates across predicted treatment",dependent1[i],sep=" - "))
 
-ggsave(paste(dependent1[i],"not_report_paper",j,sep="_"), device="png",  plot = last_plot(),
+ggsave(paste(dependent1[i],j,"not_report_paper.png",sep="_"), device="png",  plot = last_plot(),
       path = "./")
 }
 
