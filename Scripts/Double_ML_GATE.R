@@ -15,8 +15,8 @@ df <- mutate(df, cfixeff=group_indices(df,cfixeff_key))
 df <- mutate(df, cfixeff=as.factor(cfixeff))
 df <- mutate(df, codmod=as.factor(codmod))
 
-dependent <- c("pchome", "pcuweek", "pcuyest", "stxo", "stpcotskill",
-               "stpcsrskill", "straven", "friendh", "efforth", "eduexpt")
+dependent <- c("pchome_r2", "pcuweek_r2", "pcuyest_r2", "stxo_r2", "stpcotskill_r2",
+               "stpcsrskill_r2", "straven_r2", "friendh_r2", "efforth_r2", "eduexpt_r2")
 
 covariates <- c("male_r2", "age_r2", "sibling_r2", 
                 "ysibling_r2","fathlivh_r2", "fathwout_r2", "mothwout_r2")
@@ -34,10 +34,8 @@ X <- as.numeric(df$won_lottery)
 
 W <- df[,1:73]
 W <- W[, !names(df) %in% dependent]
-# W <- df[, names(df) %in% covariates]
-Y <- df$pchome_r2
-Q = 4
-prop_scores = F
+Y <- df[, names(df) %in% dependent]
+
 
 gates <- function(Y, W, X, Q=4, prop_scores=F) {
   
@@ -134,9 +132,11 @@ table_from_gates <-function(model) {
 
 #Repeat for inference:
 
-output <- rerun(10, table_from_gates(gates(Y, W, X))) %>% # Increase reruns in practice!
-  bind_rows %>%
-  group_by(coefficient) %>%
-  summarize_all(median)
-
+output <- list()
+for (i in 1:length(dependent)){
+  output[[i]] <- rerun(10, table_from_gates(gates(Y[,i], W, X))) %>% # Increase reruns in practice!
+    bind_rows %>%
+    group_by(coefficient) %>%
+    summarize_all(median)
+}
 output
