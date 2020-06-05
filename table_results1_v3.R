@@ -186,13 +186,16 @@ W$g34  <- df$g34
 W$male <- ifelse(df$female!=1,1,0)
 
 sl_lm <- list()
-for(i in 1:length(dependent1)){sl_lm[[i]] = SuperLearner(Y = Y[i], 
+for(i in 1:length(dependent1)){sl_lm[[i]] = SuperLearner(Y = Y[,i], 
                      X = data.frame(X=X, W, W*X), 
                      family = gaussian(), 
                      SL.library = "SL.lm", 
                      cvControl = list(V=0))}
 
-summary(sl_lm$fitLibrary$SL.lm_All$object)
+summary(sl_lm[[1]]$fitLibrary$SL.lm_All$object)
+summary(sl_lm[[2]]$fitLibrary$SL.lm_All$object)
+summary(sl_lm[[3]]$fitLibrary$SL.lm_All$object)
+summary(sl_lm[[4]]$fitLibrary$SL.lm_All$object)
 
 ####################################################### 
 ################   Causal Trees   #####################
