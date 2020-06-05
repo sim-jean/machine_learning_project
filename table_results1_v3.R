@@ -497,4 +497,11 @@ for (i in 1:length(dependent1)){
 }
 output
 
+k <- ggplot(output[[1]], aes(output[[1]], output[[1]][1,2], ymin = output[[1]][1,3], ymax = output[[1]][1,4]))
+k + geom_errorbar()
+
+
+
+
+
  
