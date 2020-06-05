@@ -1,7 +1,7 @@
 rm(list = ls())
 
 # Installs packages if not already installed, then loads packages 
-list.of.packages <- c("doBy", "lfe", "dplyr", "readstata13", "causalTree", "githubinstall", "rpart.plot", "devtools", "base", "dummies", "sjlabelled", "glmnet", "rpart.plot", "randomForest", "devtools", "tidyverse", "knitr", "SuperLearner", "caret", "xgboost", "stargazer")
+list.of.packages <- c("doBy","janitor", "lfe", "dplyr", "readstata13", "causalTree", "githubinstall", "rpart.plot", "devtools", "base", "dummies", "sjlabelled", "glmnet", "rpart.plot", "randomForest", "devtools", "tidyverse", "knitr", "SuperLearner", "caret", "xgboost", "stargazer")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
 invisible(lapply(list.of.packages, library, character.only = TRUE))
@@ -528,13 +528,22 @@ for (i in 1:length(dependent1)){
     group_by(coefficient) %>%
     summarize_all(median)
 }
-output
 
-k <- ggplot(output[[1]], aes(output[[1]], output[[1]][1,2], ymin = output[[1]][1,3], ymax = output[[1]][1,4]))
-k + geom_errorbar()
+a <- output[[1]]
+b <- output[[2]]
+c <- output[[3]]
+d <- output[[4]]
 
+stxo <- ggplot() + geom_errorbar(data=a, mapping=aes(x=coefficient, ymin=ci_lower_90, ymax=ci_upper_90), width=0.2, size=1, color="blue") +
+  geom_point(data=a, mapping=aes(x=coefficient, y=estimates), size=4, shape=21, fill="white")
 
+stpcotskill <- ggplot() + geom_errorbar(data=b, mapping=aes(x=coefficient, ymin=ci_lower_90, ymax=ci_upper_90), width=0.2, size=1, color="blue") +
+  geom_point(data=b, mapping=aes(x=coefficient, y=estimates), size=4, shape=21, fill="white")
 
+stpcsrskill <- ggplot() + geom_errorbar(data=c, mapping=aes(x=coefficient, ymin=ci_lower_90, ymax=ci_upper_90), width=0.2, size=1, color="blue") +
+  geom_point(data=c, mapping=aes(x=coefficient, y=estimates), size=4, shape=21, fill="white")
 
+straven <- ggplot() + geom_errorbar(data=d, mapping=aes(x=coefficient, ymin=ci_lower_90, ymax=ci_upper_90), width=0.2, size=1, color="blue") +
+  geom_point(data=d, mapping=aes(x=coefficient, y=estimates), size=4, shape=21, fill="white")
 
  
