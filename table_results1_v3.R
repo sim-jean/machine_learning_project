@@ -1,12 +1,12 @@
 rm(list = ls())
 
 # Installs packages if not already installed, then loads packages 
-list.of.packages <- c("doBy", "lfe", "dplyr", "readstata13", "causalTree", "githubinstall", "rpart.plot", "devtools", "base", "dummies", "sjlabelled", "glmnet", "rpart.plot", "randomForest", "devtools", "tidyverse", "knitr", "SuperLearner", "caret", "xgboost")
+list.of.packages <- c("doBy", "lfe", "dplyr", "readstata13", "causalTree", "githubinstall", "rpart.plot", "devtools", "base", "dummies", "sjlabelled", "glmnet", "rpart.plot", "randomForest", "devtools", "tidyverse", "knitr", "SuperLearner", "caret", "xgboost", "stargazer")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
 invisible(lapply(list.of.packages, library, character.only = TRUE))
 
-tables_stlima <- read.dta13("C:/Users/Carlos Leon/Desktop/PSE/Second semester/Machine Learning/final_project/tables_stlima.dta")
+tables_stlima <- read.dta13("data/Finales/tables_stlima.dta")
 
 #######################################################
 ################   Table 2   ##########################
@@ -75,7 +75,7 @@ print(Table2_C3)
 ################   Table 8   ##########################
 #######################################################
 
-table_8 <- read.dta13("C:/Users/Carlos Leon/Desktop/PSE/Second semester/Machine Learning/final_project/One_laptopfiles/data/data_table_8.dta")
+table_8 <- read.dta13("Data/data_table_8.dta")
 table_8 <- mutate(table_8, cfixeff_key = paste(table_8$codmod,
                                                table_8$grado_r1, table_8$seccion_r1,sep=""))
 table_8 <- mutate(table_8, cfixeff=group_indices(table_8,cfixeff_key))
@@ -167,13 +167,46 @@ colnames(Table8) <- c("Dep.var.", "Males", "Females", "N",
                          "Dep.var.", "Read Below", "Read Above", "N",
                          "Dep.var.", "Academ. Below", "Academ. Above", "N")
 
-print(Table8)
-
+# Formating the table
+Table8<-Table8[,-c(5,9,13,17,21,25)]
+names_mat<-Table8[,1]
+Table8<-Table8[,-1]
+Table8<-mapply(Table8, FUN=as.numeric)
+Table8<-matrix(Table8,nrow = length(dependent)*2, ncol = length(Hetero_eff)*4-7)
+Table8<-round(Table8,2)
+Table8<-cbind(names_mat,Table8)
+colnames(Table8)<-c("Dep.var.", "Males", "Females", "N",
+                    "3-4 grade", "5-6 grade", "N", "PC Home", "No PC Home", "N",
+                     "Int. Home", "No Int. Home", "N",
+                     "Math Below", "Math Above", "N",
+                    "Read Below", "Read Above", "N",
+                     "Academ. Below", "Academ. Above", "N")
+Table8<-Table8[,-c(4,7,10,13,16,19,22)]
+Table8<-as.data.frame(Table8)
+Table8b <- data.frame(apply(Table8, 2, function(x) as.numeric(as.character(x))))
+Table8b$Dep.var.<-Table8$Dep.var.
+for(i in 2:ncol(Table8b)){
+  for(j in seq(1,nrow(Table8b),by=2)){
+    if(as.numeric(Table8b[j,i])/as.numeric(Table8b[j+1,i])>=3){
+      Table8b[j+1,i]  <-  paste0(Table8b[j+1,i],"***")
+    } else if(3>as.numeric(Table8b[j,i])/as.numeric(Table8b[j+1,i])  &  as.numeric(Table8b[j,i])/as.numeric(Table8b[j+1,i]) >=2.5){
+      Table8b[j+1,i]   <-  paste0(Table8b[j+1,i],"**")
+    } else if(2.5>as.numeric(Table8b[j,i])/as.numeric(Table8b[j+1,i]) & as.numeric(Table8b[j,i])/as.numeric(Table8b[j+1,i])>=2){
+      Table8b[j+1,i]   <-  paste0(Table8b[j+1,i],"*")
+    } else if (2>as.numeric(Table8b[j,i])/as.numeric(Table8b[j+1,i])){
+      Table8b[j+1,i]   <-  Table8b[j+1,i]
+    }
+  }
+}
+for(j in seq(1,nrow(Table8b),by=2)){
+  Table8b[j+1,1]<-NA
+}
+stargazer(Table8b[1:20,1:15], summary=FALSE)
 ###############################################
 ################   NAIVE OLS   ################   
 ###############################################
 
-CT_dat <- read.dta13("/Users/raphaelhuleux/Documents/GitHub/machine_learning_project/Data/data_table_8.dta")
+CT_dat <- read.dta13("data/data_table_8.dta")
 
 dependent1 <- c("stxo", "stpcotskill", "stpcsrskill", "straven")
 df <- subset(CT_dat, select = -c(pcuytwothr_r2, pcuwothr_r2, codest, codmod, nombr_es))
